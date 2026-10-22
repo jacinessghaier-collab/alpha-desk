@@ -26,8 +26,10 @@ st.set_page_config(
 
 if "refresh_count" not in st.session_state:
     st.session_state.refresh_count = 0
+if "tutorial_step" not in st.session_state:
+    st.session_state.tutorial_step = 1
 
-# --- BUBBLE-, GLAS- & 2.5s ANIMATIONS-DESIGN ---
+# --- BUBBLE-, GLAS- & 2.5s ANIMATIONS-DESIGN INKL. MOBILE-OPTIMIERUNG ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -229,6 +231,18 @@ st.markdown("""
         transform-origin: bottom center !important;
         animation: barGrowBottomToTop 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
     }
+
+    /* SPEZIFISCHE MOBILE-OPTIMIERUNG FÜR SMARTPHONES */
+    @media (max-width: 768px) {
+        .block-container {
+            padding-top: 1rem !important;
+            padding-left: 0.5rem !important;
+            padding-right: 0.5rem !important;
+        }
+        h1 { font-size: 1.5rem !important; }
+        h2, h3 { font-size: 1.2rem !important; }
+        .bubble-card { padding: 15px 12px; }
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -251,7 +265,6 @@ def save_local_data(data):
         pass
 
 local_store = load_local_data()
-
 PORTFOLIO_DATA = make_portfolio_data(local_store.get("weights", {}))
 
 # --- SEITENLEISTE ---
@@ -390,6 +403,106 @@ st.markdown(f"""
         </div>
     </div>
 """, unsafe_allow_html=True)
+
+# --- INTERAKTIVES SYSTEM-TUTORIAL (SCHRITT-FÜR-SCHRITT) ---
+def next_step():
+    if st.session_state.tutorial_step < 5:
+        st.session_state.tutorial_step += 1
+
+def prev_step():
+    if st.session_state.tutorial_step > 1:
+        st.session_state.tutorial_step -= 1
+
+with st.expander("📖 INTERAKTIVES TUTORIAL STARTEN (SCHRITT-FÜR-SCHRITT GUIDE)", expanded=False):
+    
+    col_btn1, col_space, col_btn2 = st.columns([1, 4, 1])
+    with col_btn1:
+        st.button("◀ Zurück", on_click=prev_step, disabled=(st.session_state.tutorial_step == 1), use_container_width=True)
+    with col_btn2:
+        st.button("Weiter ▶", on_click=next_step, disabled=(st.session_state.tutorial_step == 5), use_container_width=True)
+
+    if st.session_state.tutorial_step == 1:
+        st.markdown("""
+        <div style="background-color: rgba(13, 27, 42, 0.85); border: 1px solid #00f5d4; border-radius: 10px; padding: 18px; color: #e0e1dd; min-height: 160px;">
+            <h4 style="color: #00f5d4; margin-top: 0;">Schritt 1/5: Das ALPHA/DESK Prinzip ⚡</h4>
+            <p>Willkommen! Dieses System nimmt dir Emotionen und Fehler beim Investieren. Du kaufst keine Hype-Aktien, sondern <b>10 globale Marktführer</b> in festen Sektor-Paaren (Wippen). <br><br>
+            Die eiserne Sicherheitsregel: <b>Das 12,5 % Hard-Gate.</b> Keine Aktie darf jemals mehr als 12,5 % deines Gesamtdepots ausmachen. Klicke auf 'Weiter', um das Cockpit kennenzulernen!</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif st.session_state.tutorial_step == 2:
+        st.markdown("""
+        <div style="background-color: rgba(13, 27, 42, 0.85); border: 1px solid #00f5d4; border-radius: 10px; padding: 18px; color: #e0e1dd; min-height: 160px;">
+            <h4 style="color: #00f5d4; margin-top: 0;">Schritt 2/5: Das Kontrollzentrum (Links / Menü) 🎛️</h4>
+            <p>Die <b>Seitenleiste</b>, die gerade in eine türkise Staubwolke gehüllt ist, ist deine Kommandozentrale. Gib dort dein <b>Gesamtkapital</b> und deine <b>monatliche Sparrate</b> ein. Wähle eine Aktie aus und stelle ihre aktuelle <b>Gewichtung</b> ein. Das gesamte Terminal rechnet dann in Echtzeit alle Signale neu um.</p>
+        </div>
+        <style>
+            [data-testid="stSidebar"] {
+                animation: neon-dust 2.5s infinite alternate !important;
+                border-right: 1px solid rgba(0, 245, 212, 0.5) !important;
+            }
+            @keyframes neon-dust {
+                0% { box-shadow: 0 0 20px 5px rgba(0, 245, 212, 0.2), inset 0 0 20px 5px rgba(0, 245, 212, 0.1); }
+                100% { box-shadow: 0 0 60px 20px rgba(0, 245, 212, 0.6), inset 0 0 40px 10px rgba(0, 245, 212, 0.3); }
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+    elif st.session_state.tutorial_step == 3:
+        st.markdown("""
+        <div style="background-color: rgba(13, 27, 42, 0.85); border: 1px solid #00f5d4; border-radius: 10px; padding: 18px; color: #e0e1dd; min-height: 160px;">
+            <h4 style="color: #00f5d4; margin-top: 0;">Schritt 3/5: Dein Live-Cockpit (Boxen) 📊</h4>
+            <p>Die leuchtenden <b>Status-Boxen</b> zeigen dir den Puls der ausgewählten Aktie. <br><br>
+            Du siehst den aktuellen <b>Kurs</b>, die jährliche <b>Dividende</b>, das <b>KGV</b> (je niedriger, desto günstiger der Kaufzeitpunkt) und dein aktuelles <b>Depot-Gewicht</b> inklusive der Überwachung des 12,5 % Limits.</p>
+        </div>
+        <style>
+            [data-testid="column"] {
+                animation: neon-dust-box 2.5s infinite alternate;
+                border-radius: 12px;
+            }
+            @keyframes neon-dust-box {
+                0% { box-shadow: 0 0 15px 2px rgba(0, 245, 212, 0.1); background-color: rgba(0, 245, 212, 0.02); }
+                100% { box-shadow: 0 0 35px 15px rgba(0, 245, 212, 0.5); background-color: rgba(0, 245, 212, 0.1); }
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+    elif st.session_state.tutorial_step == 4:
+        st.markdown("""
+        <div style="background-color: rgba(13, 27, 42, 0.85); border: 1px solid #00f5d4; border-radius: 10px; padding: 18px; color: #e0e1dd; min-height: 160px;">
+            <h4 style="color: #00f5d4; margin-top: 0;">Schritt 4/5: Wippen & Order-Router (Tab 1 & 2) ⚖️</h4>
+            <p>Die Analysen spielen sich in den aufleuchtenden <b>Unterpunkten (Tabs)</b> ab. <br><br>
+            <b>Tab 1 (Matrix)</b> vergleicht zwei Partner-Aktien und zeigt dir als grünes Signal sofort an, wer günstiger ist. <b>Tab 2 (Order-Router)</b> nimmt deine 300 € Sparrate und verteilt sie mathematisch so auf untergewichtete Aktien, dass du keine unnötigen Order-Gebühren bezahlst.</p>
+        </div>
+        <style>
+            [data-testid="stTabs"] {
+                animation: neon-dust-tabs 2.5s infinite alternate;
+                border-radius: 10px;
+            }
+            @keyframes neon-dust-tabs {
+                0% { box-shadow: 0 0 20px 5px rgba(0, 245, 212, 0.1); }
+                100% { box-shadow: 0 0 50px 20px rgba(0, 245, 212, 0.4); }
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+    elif st.session_state.tutorial_step == 5:
+        st.markdown("""
+        <div style="background-color: rgba(13, 27, 42, 0.85); border: 1px solid #00f5d4; border-radius: 10px; padding: 18px; color: #e0e1dd; min-height: 160px;">
+            <h4 style="color: #00f5d4; margin-top: 0;">Schritt 5/5: KI, Cashflow & Zukunft (Tab 3 bis 6) 🤖</h4>
+            <p>Im <b>KI-Auditor (Tab 3)</b> prüfen virtuelle Experten (wie Buffet & Dalio) deine Anlageentscheidung. Im <b>Notizbuch (Tab 4)</b> speicherst du Infos und siehst deine monatlichen Ausschüttungen im Kalender. <b>Tab 5 & 6 (Makro & Zinseszins)</b> zeigen dir schwarz auf weiß, wie dein Vermögen langfristig exponentiell wächst. Du bist jetzt bereit!</p>
+        </div>
+        <style>
+            [data-testid="stTabs"] {
+                animation: neon-dust-tabs 2.5s infinite alternate;
+                border-radius: 10px;
+            }
+            @keyframes neon-dust-tabs {
+                0% { box-shadow: 0 0 20px 5px rgba(0, 245, 212, 0.1); }
+                100% { box-shadow: 0 0 50px 20px rgba(0, 245, 212, 0.4); }
+            }
+        </style>
+        """, unsafe_allow_html=True)
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
@@ -537,11 +650,11 @@ with tab3:
         if st.button(f"🚀 ANALYSIERE {ausgewählte_aktie.upper()}"):
             st.markdown(f"#### 🧠 Multi-Agenten Analyse für {ausgewählte_aktie}")
             ai_text = f"""
-* **1. Fundamentaler Bewertungs-Check:** KGV {aktie_info['kgv']} für {ausgewählte_aktie} im historischen Durchschnitt.
-* **2. Dividenden-Stabilität:** {aktie_info['div_yield']}% Rendite (Zahlmonate: {aktie_info['monate']}).
-* **3. Risiko-Management:** Gewichtung von {aktie_info['gewicht']}% im sicheren Hard-Gate-Korridor.
-* **4. Makro-Resilienz:** Solide Abschirmung gegen Marktschwankungen.
-* **5. Fazit:** Position optimal im Rotationszyklus eingebunden.
+- **1. Fundamentaler Bewertungs-Check:** KGV {aktie_info['kgv']} für {ausgewählte_aktie} im historischen Durchschnitt.
+- **2. Dividenden-Stabilität:** {aktie_info['div_yield']}% Rendite (Zahlmonate: {aktie_info['monate']}).
+- **3. Risiko-Management:** Gewichtung von {aktie_info['gewicht']}% im sicheren Hard-Gate-Korridor.
+- **4. Makro-Resilienz:** Solide Abschirmung gegen Marktschwankungen.
+- **5. Fazit:** Position optimal im Rotationszyklus eingebunden.
             """
             st.success("Analyse erfolgreich abgeschlossen!")
             st.info(ai_text)
