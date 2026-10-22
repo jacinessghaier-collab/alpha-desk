@@ -19,8 +19,8 @@ JASIN_ESSGHAIER_PROPRIETARY_AGENT_SIGNATURE = "AD-2026-PROPRIETARY-JACIN-ESSGHAI
 
 # --- SEITEN-KONFIGURATION ---
 st.set_page_config(
-    page_title="ALPHA/DESK — Institutional Terminal",
-    page_icon="⚡",
+    page_title="ALPHA/DESK - Institutional Terminal",
+    page_icon="logo.png",
     layout="wide"
 )
 
